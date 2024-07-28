@@ -1,13 +1,12 @@
+import { useAmountFormatter } from '@/ui/hooks'
+
 type ResultPerPersonProps = {
   label: string
   amount: number
 }
 
 export const ResultPerPerson = ({ label, amount }: ResultPerPersonProps) => {
-  const formatter = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  })
+  const formattedAmout = useAmountFormatter(amount)
 
   return (
     <div className='flex items-center justify-between w-full'>
@@ -20,9 +19,7 @@ export const ResultPerPerson = ({ label, amount }: ResultPerPersonProps) => {
           <span className='ml-1'>person</span>
         </span>
       </div>
-      <strong className='font-bold text-5xl text-strong-cyan'>
-        {formatter.format(amount)}
-      </strong>
+      <strong className='font-bold text-5xl text-strong-cyan'>{formattedAmout}</strong>
     </div>
   )
 }

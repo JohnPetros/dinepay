@@ -16,9 +16,13 @@ const button = tv({
   },
 })
 
-export const StyledButton = ({ children, bg = 'primary' }: ButtonProps) => {
+export const StyledButton = ({
+  children,
+  bg = 'primary',
+  ...buttonProps
+}: ButtonProps) => {
   return (
-    <button type='button' className={button({ bg })}>
+    <button type='button' className={button({ bg })} {...buttonProps}>
       {children}
     </button>
   )

@@ -1,4 +1,4 @@
-import { CalculatorPage } from '@/ui/components/pages/calculator'
+import { CalculatorPage } from '@/ui/components/pages/tip-calculator'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 const router = createBrowserRouter([
