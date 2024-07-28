@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "/home/johnpetros/projects/dinepay/contracts/DinePay.sol": {
+    "/home/johnpetros/projects/dinepay/packages/contract/contracts/DinePay.sol": {
       "lastModificationDate": 1722042812262,
       "contentHash": "8d9246146b8290d6c56cf8bf88875427",
       "sourceName": "contracts/DinePay.sol",
