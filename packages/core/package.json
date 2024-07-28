@@ -1,0 +1,6 @@
+{
+  "name": "@dinepay/core",
+  "exports": {
+    "./constants": "./src/constants/index.ts"
+  }
+}
