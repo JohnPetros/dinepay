@@ -1,6 +1,9 @@
 {
+  "name": "@dinepay/contract",
+  "version": "1.0.0",
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
+    "@dinepay/typescript-config": "*",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "hardhat": "^2.22.6"
   }
