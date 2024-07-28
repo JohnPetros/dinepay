@@ -1,6 +1,7 @@
 {
   "name": "@dinepay/core",
   "exports": {
-    "./constants": "./src/constants/index.ts"
+    "./constants": "./src/constants/index.ts",
+    "./structs": "./src/structs/index.ts"
   }
 }
