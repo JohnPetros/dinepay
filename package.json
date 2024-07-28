@@ -1,0 +1,19 @@
+{
+  "name": "dinepay",
+  "private": true,
+  "description": "web3 app for restaurant receipts management.",
+  "scripts": {
+    "dev": "turbo run dev"
+  },
+  "author": "John Petros",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@biomejs/biome": "1.8.3",
+    "@types/react": "^18.3.3",
+    "turbo": "^2.0.9"
+  },
+  "packageManager": "npm@10.7.0"
+}
