@@ -2,6 +2,9 @@
   "name": "@dinepay/core",
   "exports": {
     "./constants": "./src/constants/index.ts",
-    "./structs": "./src/structs/index.ts"
+    "./structs": "./src/structs/index.ts",
+    "./dtos": "./src/dtos/index.ts",
+    "./interfaces": "./src/interfaces/index.ts",
+    "./responses": "./src/responses/index.ts"
   }
 }

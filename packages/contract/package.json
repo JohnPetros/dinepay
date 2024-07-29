@@ -4,6 +4,9 @@
   "scripts": {
     "deploy": "hardhat run scripts/deploy.ts --network sepolia"
   },
+  "exports": {
+    "./build": "./build/index.ts"
+  },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
     "@dinepay/typescript-config": "*",
@@ -11,6 +14,7 @@
     "hardhat": "^2.22.6"
   },
   "dependencies": {
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "sonner": "^1.5.0"
   }
 }
