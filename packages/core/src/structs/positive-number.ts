@@ -20,4 +20,8 @@ export class PositiveNumber {
   get isZero(): boolean {
     return this.value === 0
   }
+
+  get isOverZero() {
+    return this.value > 0
+  }
 }

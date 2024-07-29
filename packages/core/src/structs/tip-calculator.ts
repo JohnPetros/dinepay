@@ -1,4 +1,5 @@
 import { PositiveNumber } from './positive-number'
+import { Receipt } from './receipt'
 
 type TipCalculatorProps = {
   percentage: PositiveNumber
@@ -35,6 +36,20 @@ export class TipCalculator {
 
   changeNumberOfPeople(numberOfPeople: number) {
     return this.clone({ numberOfPeople: PositiveNumber.create(numberOfPeople, false) })
+  }
+
+  createReceipt(customerAccount: string, waiterAccount: string): Receipt {
+    return Receipt.create({
+      bill: this.bill.value,
+      numberOfPeople: this.numberOfPeople.value,
+      tipPercentage: this.percentage.value,
+      customerAccount: customerAccount,
+      waiterAccount: waiterAccount,
+    })
+  }
+
+  get canCreateReceipt() {
+   return this.numberOfPeople.isOverZero && this.percentage.isOverZero && this.bill.isOverZero
   }
 
   get tipAmount(): number {

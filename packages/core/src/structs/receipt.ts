@@ -26,9 +26,9 @@ export class Receipt {
 
   static create(dto: ReceiptDto) {
     return new Receipt({
-      bill: PositiveNumber.create(dto.bill),
-      tipPercentage: PositiveNumber.create(dto.tipPercentage),
-      numberOfPeople: PositiveNumber.create(dto.numberOfPeople),
+      bill: PositiveNumber.create(dto.bill, false),
+      tipPercentage: PositiveNumber.create(dto.tipPercentage, false),
+      numberOfPeople: PositiveNumber.create(dto.numberOfPeople, false),
       customerAccount: dto.customerAccount,
       waiterAccount: dto.waiterAccount,
     })
