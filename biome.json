@@ -32,6 +32,7 @@
         "useDefaultParameterLast": "warn",
         "useConst": "warn",
         "useEnumInitializers": "warn",
+        "useExportType": "off",
         "useTemplate": "warn",
         "useSelfClosingElements": "warn",
         "useNumberNamespace": "off"
