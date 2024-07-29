@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { WAITERS } from '../../../constants/waiters'
+
+import { WAITERS } from '@/ui/constants'
 
 export function useWaiterSelector(onSelect: (waiterAccountAddress: string) => void) {
   const [selectedWaiter, setSelectedWaiter] = useState(WAITERS[0])

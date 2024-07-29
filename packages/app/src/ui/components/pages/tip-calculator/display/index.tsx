@@ -1,7 +1,7 @@
-import { Button } from '@/ui/components/shared/button'
 import { ResultPerPerson } from './result-per-person'
 import { useTipCalculatorContext } from '@/ui/contexts/tip-calculator-context'
 import { Result } from './result'
+import { PayamentButton } from './payament-button'
 
 export const Display = () => {
   const { tipCalulator } = useTipCalculatorContext()
@@ -16,7 +16,7 @@ export const Display = () => {
           <Result label='tip amount' amount={tipCalulator.tipAmount} />
         </div>
       </div>
-      <Button bg='tertiary'>Pay</Button>
+      <PayamentButton />
     </div>
   )
 }
