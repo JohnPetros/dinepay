@@ -1,6 +1,6 @@
 import CharllesTraymore from '@/assets/charlles-traymore.jpg'
 import EdwardCarafe from '@/assets/edward-carafe.jpg'
-import JohnDecanter from '@/assets/john-decanter.jpg'
+import PaulDecanter from '@/assets/john-decanter.jpg'
 
 type Waiter = {
   id: number
@@ -24,8 +24,8 @@ export const WAITERS: Waiter[] = [
   },
   {
     id: 3,
-    name: 'John Decanter',
-    avatar: JohnDecanter,
+    name: 'Paul Decanter',
+    avatar: PaulDecanter,
     accountAddress: '0x90F79bf6EB2c4f870365E785982E1f101E93b906 ',
   },
 ]

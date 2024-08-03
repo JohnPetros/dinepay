@@ -29,7 +29,7 @@ export function usePayamentButton(dialogRef: RefObject<DialogRef>) {
       waiterAccountAddress,
     )
 
-    const response = await web3.registerReceipt(receipt.dto)
+    const response = await web3.registerReceipt(receipt)
 
     if (response.isFailure) {
       toast.error(response.errorMessage)
