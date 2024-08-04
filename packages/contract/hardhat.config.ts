@@ -1,4 +1,4 @@
-import type { HardhatUserConfig } from 'hardhat/config'
+import { task, type HardhatUserConfig } from 'hardhat/config'
 import dotenv from 'dotenv'
 import '@nomicfoundation/hardhat-toolbox'
 
