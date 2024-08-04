@@ -13,6 +13,7 @@
     "@dinepay/contract": "*",
     "@dinepay/core": "*",
     "@headlessui/react": "^2.1.2",
+    "dayjs": "^1.11.12",
     "lucide-react": "^0.416.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
