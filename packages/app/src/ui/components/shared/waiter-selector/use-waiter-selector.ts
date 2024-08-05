@@ -1,12 +1,25 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import { WAITERS } from '@/ui/constants'
 
-export function useWaiterSelector(onSelect: (waiterAccountAddress: string) => void) {
-  const [selectedWaiter, setSelectedWaiter] = useState(WAITERS[0])
+export function useWaiterSelector(
+  canSelectAll: boolean,
+  onSelect: (waiterAccountAddress: string) => void,
+) {
+  const [selectedWaiter, setSelectedWaiter] = useState(canSelectAll ? 'all' : WAITERS[0])
 
-  function handleSelectorChange(waiterId: number) {
-    const waiter = WAITERS.find((waiter) => waiter.id === waiterId)
+  const reset = useCallback(() => {
+    setSelectedWaiter(canSelectAll ? 'all' : WAITERS[0])
+  }, [canSelectAll])
+
+  function handleSelectorChange(value: string) {
+    if (value === 'all') {
+      setSelectedWaiter('all')
+      onSelect('all')
+      return
+    }
+
+    const waiter = WAITERS.find((waiter) => waiter.id === Number(value))
 
     if (waiter) {
       setSelectedWaiter(waiter)
@@ -17,5 +30,6 @@ export function useWaiterSelector(onSelect: (waiterAccountAddress: string) => vo
   return {
     selectedWaiter,
     handleSelectorChange,
+    reset,
   }
 }
