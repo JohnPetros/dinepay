@@ -25,6 +25,7 @@ export function useControls() {
   }
 
   return {
+    tipCalulator,
     billError,
     numberOfPeopleError,
     handleBillChange,

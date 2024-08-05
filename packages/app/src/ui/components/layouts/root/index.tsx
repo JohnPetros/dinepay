@@ -14,11 +14,11 @@ if (root)
       <WalletProvider>
         <Toaster duration={2000} richColors position='top-right' />
         <div className='font-space-mono min-h-screen bg-light-grayish-cyan'>
-          <div className='max-w-[1200px] w-full mx-auto pt-12'>
+          <div className='max-w-[1000px] w-full mx-auto pt-10'>
             <h1 className='text-2xl text-center text-dark-grayish-cyan font-semibold'>
               DinePay
             </h1>
-            <div className='mt-24'>
+            <div className='mt-12'>
               <Router />
             </div>
           </div>

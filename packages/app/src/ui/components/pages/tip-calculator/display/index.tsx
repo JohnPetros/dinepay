@@ -10,9 +10,9 @@ export const Display = () => {
     <div className='flex flex-col bg-very-dark-cyan rounded-lg p-6'>
       <div className='flex-1 flex flex-col gap-6'>
         <ResultPerPerson label='tip amount' amount={tipCalulator.tipAmountPerPerson} />
-        <ResultPerPerson label='total' amount={tipCalulator.totalPerPerson} />
+        <ResultPerPerson label='total' amount={tipCalulator.totalAmountPerPerson} />
         <div className='space-y-2'>
-          <Result label='total' amount={tipCalulator.total} />
+          <Result label='total' amount={tipCalulator.totalAmount} />
           <Result label='tip amount' amount={tipCalulator.tipAmount} />
         </div>
       </div>

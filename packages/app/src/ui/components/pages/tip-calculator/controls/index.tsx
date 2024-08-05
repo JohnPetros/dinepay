@@ -1,6 +1,6 @@
 import { NumberInput } from '@/ui/components/shared/number-input'
 import { TipPercentageSelector } from './tip-percentage-selector'
-import { useControls } from './useControls'
+import { useControls } from './use-controls'
 
 export const Controls = () => {
   const { billError, numberOfPeopleError, handleBillChange, handleNumberOfPeopleChange } =
@@ -12,12 +12,14 @@ export const Controls = () => {
         label='Bill'
         icon='dollar-sign'
         error={billError}
+        autoFocus
         onChange={handleBillChange}
       />
       <TipPercentageSelector />
       <NumberInput
         label='Number of People'
         icon='people'
+        defaultValue={1}
         error={numberOfPeopleError}
         onChange={handleNumberOfPeopleChange}
       />

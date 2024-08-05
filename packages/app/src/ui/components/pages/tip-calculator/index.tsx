@@ -1,6 +1,7 @@
 import { TipCalulatorProvider } from '@/ui/contexts/tip-calculator-context'
 import { Controls } from './controls'
 import { Display } from './display'
+import { Link } from '../../shared/Link'
 
 export const TipCalculatorPage = () => {
   return (
@@ -9,6 +10,9 @@ export const TipCalculatorPage = () => {
         <Controls />
         <Display />
       </main>
+      <Link route='/receipts' className='block mx-auto w-max mt-6'>
+        See receipts
+      </Link>
     </TipCalulatorProvider>
   )
 }

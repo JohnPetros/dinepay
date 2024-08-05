@@ -10,7 +10,8 @@ export function usePayamentButton(dialogRef: RefObject<DialogRef>) {
   const [waiterAccountAddress, setWaiterAccountAddress] = useState(
     WAITERS[0].accountAddress,
   )
-  const { tipCalulator } = useTipCalculatorContext()
+  const [isLoading, setIsLoading] = useState(false)
+  const { tipCalulator, setTipCalculator } = useTipCalculatorContext()
   const web3 = useWeb3()
   const toast = useToast()
 
@@ -23,23 +24,27 @@ export function usePayamentButton(dialogRef: RefObject<DialogRef>) {
   }
 
   async function handleDialogConfirm() {
-    const customerAccountAddress = await web3.getCustomerAccountAddress()
+    setIsLoading(true)
+    const customerAccountAddress = await web3.getUserAccount()
     const receipt = tipCalulator.createReceipt(
       customerAccountAddress,
       waiterAccountAddress,
     )
 
-    const response = await web3.registerReceipt(receipt)
+    const response = await web3.dinepayContract.registerReceipt(receipt)
+    setIsLoading(false)
 
-    if (response.isFailure) {
-      toast.error(response.errorMessage)
+    if (response.hasTransaction) {
+      toast.success('Receipt sucesscfully tranfered!')
+      setTipCalculator(tipCalulator.reset())
       return
     }
 
-    toast.success('Receipt sucesscfully tranfered!')
+    toast.error(response.errorMessage)
   }
 
   return {
+    isLoading,
     tipCalulator,
     handleSelectWaiter,
     handleButtonClick,
