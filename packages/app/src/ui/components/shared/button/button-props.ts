@@ -1,7 +1,7 @@
-import type { ComponentProps } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 
 export type ButtonProps = {
-  children: string
+  children: ReactNode
   bg?: 'primary' | 'secondary' | 'tertiary'
   size?: 'large' | 'small'
 } & ComponentProps<'button'>
