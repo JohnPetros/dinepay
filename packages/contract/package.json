@@ -2,7 +2,11 @@
   "name": "@dinepay/contract",
   "version": "1.0.0",
   "scripts": {
-    "deploy": "hardhat run scripts/deploy.ts --network sepolia"
+    "network": "hardhat node",
+    "test": "hardhat test",
+    "covarage": "hardhat covarage",
+    "deploy:test": "hardhat run scripts/deploy.ts --network sepolia",
+    "deploy:local": "hardhat run scripts/deploy.ts --network localhost"
   },
   "exports": {
     "./build": "./build/index.ts"
@@ -14,7 +18,20 @@
     "hardhat": "^2.22.6"
   },
   "dependencies": {
-    "dotenv": "^16.4.5",
-    "sonner": "^1.5.0"
+    "dotenv": "^16.4.5"
+  },
+  "browserslist": {
+    "production": [
+      "chrome >= 67",
+      "edge >= 79",
+      "firefox >= 68",
+      "opera >= 54",
+      "safari >= 14"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
