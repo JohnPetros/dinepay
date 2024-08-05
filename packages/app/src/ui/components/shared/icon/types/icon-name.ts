@@ -1,1 +1,1 @@
-type IconName = 'dollar-sign' | 'people'
+type IconName = 'dollar-sign' | 'people' | 'close'

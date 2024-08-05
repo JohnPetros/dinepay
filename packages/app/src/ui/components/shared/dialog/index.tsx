@@ -9,6 +9,7 @@ import {
 import type { DialogRef } from './types'
 import { useDialog } from './use-dialog'
 import { Button } from '../button'
+import { Icon } from '../icon'
 
 type DialogProps = {
   title: string
@@ -21,31 +22,38 @@ const DialogComponent = (
   { title, description, children, onConfirm }: DialogProps,
   ref: ForwardedRef<DialogRef>,
 ) => {
-  const { isOpen, open, handleButtonClick } = useDialog(onConfirm)
+  const { isOpen, open, close, handleCloseButtonClick, handleConfirmButtonClick } =
+    useDialog(onConfirm)
 
   useImperativeHandle(
     ref,
     () => {
       return {
         open,
+        close,
       }
     },
-    [open],
+    [open, close],
   )
 
   return (
-    <DialogContainer role='dialog' open={isOpen} onClose={() => {}}>
+    <DialogContainer open={isOpen} onClose={() => {}}>
       <div className='fixed inset-0 flex w-screen items-center justify-center bg-black/70'>
         <DialogPanel className='max-w-lg w-full space-y-4 border bg-white p-6 rounded-lg'>
-          <DialogTitle className='text-2xl text-very-dark-cyan font-bold'>
-            {title}
-          </DialogTitle>
+          <div className='flex items-center justify-between'>
+            <DialogTitle className='text-2xl text-very-dark-cyan font-bold'>
+              {title}
+            </DialogTitle>
+            <button type='button' onClick={handleCloseButtonClick}>
+              <Icon name='close' className='text-lg text-grayish-cyan' />
+            </button>
+          </div>
           <Description className='text-very-dark-cyan text-lg font-medium'>
             {description}
           </Description>
           {children}
           <div className='flex gap-4'>
-            <Button size='small' onClick={handleButtonClick}>
+            <Button size='small' onClick={handleConfirmButtonClick}>
               Confirm
             </Button>
           </div>
