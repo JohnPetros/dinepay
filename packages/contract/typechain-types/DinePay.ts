@@ -23,52 +23,109 @@ import type {
 
 export declare namespace DinePay {
   export type ReceiptStruct = {
-    bill: BigNumberish;
-    tipPercentage: BigNumberish;
-    numberOfPeople: BigNumberish;
+    id: BigNumberish;
     customerAccount: AddressLike;
+    waiterAccount: AddressLike;
+    totalAmount: BigNumberish;
+    tipPercentage: BigNumberish;
+    isWithdrawn: boolean;
+    createdAt: BigNumberish;
   };
 
   export type ReceiptStructOutput = [
-    bill: bigint,
+    id: bigint,
+    customerAccount: string,
+    waiterAccount: string,
+    totalAmount: bigint,
     tipPercentage: bigint,
-    numberOfPeople: bigint,
-    customerAccount: string
+    isWithdrawn: boolean,
+    createdAt: bigint
   ] & {
-    bill: bigint;
-    tipPercentage: bigint;
-    numberOfPeople: bigint;
+    id: bigint;
     customerAccount: string;
+    waiterAccount: string;
+    totalAmount: bigint;
+    tipPercentage: bigint;
+    isWithdrawn: boolean;
+    createdAt: bigint;
   };
 }
 
 export interface DinePayInterface extends Interface {
   getFunction(
-    nameOrSignature: "getReceiptByWaiter" | "receipts" | "registerReceipt"
+    nameOrSignature:
+      | "getBalance"
+      | "getReceipts"
+      | "getReceiptsByWaiter"
+      | "getWaiterDividend"
+      | "payAllWaiters"
+      | "payWaiter"
+      | "payWaiterReceipt"
+      | "registerReceipt"
+      | "withdraw"
   ): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "getReceiptByWaiter",
+    functionFragment: "getBalance",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getReceipts",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getReceiptsByWaiter",
     values: [AddressLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "receipts",
+    functionFragment: "getWaiterDividend",
     values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "payAllWaiters",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "payWaiter",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "payWaiterReceipt",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "registerReceipt",
-    values: [AddressLike, BigNumberish, BigNumberish, BigNumberish]
+    values: [AddressLike, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "withdraw", values?: undefined): string;
 
+  decodeFunctionResult(functionFragment: "getBalance", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "getReceiptByWaiter",
+    functionFragment: "getReceipts",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "receipts", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getReceiptsByWaiter",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getWaiterDividend",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "payAllWaiters",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "payWaiter", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "payWaiterReceipt",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "registerReceipt",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
 }
 
 export interface DinePay extends BaseContract {
@@ -114,73 +171,83 @@ export interface DinePay extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  getReceiptByWaiter: TypedContractMethod<
+  getBalance: TypedContractMethod<[], [bigint], "view">;
+
+  getReceipts: TypedContractMethod<[], [DinePay.ReceiptStructOutput[]], "view">;
+
+  getReceiptsByWaiter: TypedContractMethod<
     [_waiterAccount: AddressLike],
-    [DinePay.ReceiptStructOutput],
+    [DinePay.ReceiptStructOutput[]],
     "view"
   >;
 
-  receipts: TypedContractMethod<
-    [arg0: AddressLike],
-    [
-      [bigint, bigint, bigint, string] & {
-        bill: bigint;
-        tipPercentage: bigint;
-        numberOfPeople: bigint;
-        customerAccount: string;
-      }
-    ],
+  getWaiterDividend: TypedContractMethod<
+    [_waiterAccount: AddressLike],
+    [bigint],
     "view"
+  >;
+
+  payAllWaiters: TypedContractMethod<[], [void], "payable">;
+
+  payWaiter: TypedContractMethod<
+    [_waiterAccount: AddressLike],
+    [void],
+    "payable"
+  >;
+
+  payWaiterReceipt: TypedContractMethod<
+    [_receiptId: BigNumberish],
+    [void],
+    "payable"
   >;
 
   registerReceipt: TypedContractMethod<
-    [
-      _waiterAccount: AddressLike,
-      _bill: BigNumberish,
-      _tipPercentage: BigNumberish,
-      _numberOfPeople: BigNumberish
-    ],
+    [_waiterAccount: AddressLike, _tipPercentage: BigNumberish],
     [void],
-    "nonpayable"
+    "payable"
   >;
+
+  withdraw: TypedContractMethod<[], [void], "payable">;
 
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
 
   getFunction(
-    nameOrSignature: "getReceiptByWaiter"
+    nameOrSignature: "getBalance"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getReceipts"
+  ): TypedContractMethod<[], [DinePay.ReceiptStructOutput[]], "view">;
+  getFunction(
+    nameOrSignature: "getReceiptsByWaiter"
   ): TypedContractMethod<
     [_waiterAccount: AddressLike],
-    [DinePay.ReceiptStructOutput],
+    [DinePay.ReceiptStructOutput[]],
     "view"
   >;
   getFunction(
-    nameOrSignature: "receipts"
-  ): TypedContractMethod<
-    [arg0: AddressLike],
-    [
-      [bigint, bigint, bigint, string] & {
-        bill: bigint;
-        tipPercentage: bigint;
-        numberOfPeople: bigint;
-        customerAccount: string;
-      }
-    ],
-    "view"
-  >;
+    nameOrSignature: "getWaiterDividend"
+  ): TypedContractMethod<[_waiterAccount: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "payAllWaiters"
+  ): TypedContractMethod<[], [void], "payable">;
+  getFunction(
+    nameOrSignature: "payWaiter"
+  ): TypedContractMethod<[_waiterAccount: AddressLike], [void], "payable">;
+  getFunction(
+    nameOrSignature: "payWaiterReceipt"
+  ): TypedContractMethod<[_receiptId: BigNumberish], [void], "payable">;
   getFunction(
     nameOrSignature: "registerReceipt"
   ): TypedContractMethod<
-    [
-      _waiterAccount: AddressLike,
-      _bill: BigNumberish,
-      _tipPercentage: BigNumberish,
-      _numberOfPeople: BigNumberish
-    ],
+    [_waiterAccount: AddressLike, _tipPercentage: BigNumberish],
     [void],
-    "nonpayable"
+    "payable"
   >;
+  getFunction(
+    nameOrSignature: "withdraw"
+  ): TypedContractMethod<[], [void], "payable">;
 
   filters: {};
 }

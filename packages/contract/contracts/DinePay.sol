@@ -2,6 +2,8 @@
 
 pragma solidity ^0.8.0;
 
+import "hardhat/console.sol";
+
 contract DinePay {
     struct Receipt {
         uint256 id;
@@ -17,35 +19,45 @@ contract DinePay {
     address[] waiterAccounts;
     Receipt[] receipts;
 
+    error NotOwnerError();
+    error ReceiptNotFoundError();
+    error WaiterAccountNotFoundError();
+    error AllReceiptsAlreadyWithdrawnError();
+    error InsufficientBalanceError();
+    error FailedWithdrawError();
+    error FailedPayWaiterError();
+    error InvalidPercentageError();
+    error InvalidAmountError();
+
     constructor() {
         ownerAccount = msg.sender;
         lastReceiptId = 0;
     }
 
     modifier onlyOwner() {
-        require(
-            msg.sender == ownerAccount,
-            "only the owner of the contract can execute this function"
-        );
+        if (msg.sender != ownerAccount) {
+            revert NotOwnerError();
+        }
         _;
     }
 
     modifier onlyWithRecepts() {
-        require(receipts.length > 0, "no recept registered yet");
+        if (receipts.length == 0) revert ReceiptNotFoundError();
         _;
     }
 
     modifier onlyWithWaiter(address _waiterAccount) {
-        require(waiterAccounts.length > 0, "no waiter account registered yet");
+        if (waiterAccounts.length == 0) revert WaiterAccountNotFoundError();
 
         bool hasWaiter = false;
         for (uint256 index = 0; index < waiterAccounts.length; index++) {
             if (waiterAccounts[index] == _waiterAccount) {
                 hasWaiter = true;
+                break;
             }
         }
 
-        require(hasWaiter, "waiter account not found");
+        if (!hasWaiter) revert WaiterAccountNotFoundError();
         _;
     }
 
@@ -53,16 +65,39 @@ contract DinePay {
         uint256 allWaitersDividend = getAllWaitersDividend();
         uint256 currentBalance = getBalance();
 
-        require(
-            currentBalance > allWaitersDividend,
-            "current balance must be greater than the total dividend for the waiters"
-        );
+        if (currentBalance == 0 || currentBalance < allWaitersDividend) {
+            revert InsufficientBalanceError();
+        }
 
         (bool isSuccess, ) = (ownerAccount).call{
             value: currentBalance - allWaitersDividend
         }("");
 
-        require(isSuccess, "failed to withdraw");
+        if (!isSuccess) revert FailedWithdrawError();
+    }
+
+    function payWaiterReceipt(
+        uint256 _receiptId
+    ) external payable onlyOwner onlyWithRecepts {
+        for (uint256 index = 0; index < receipts.length; index++) {
+            Receipt memory receipt = receipts[index];
+
+            if (receipts[index].id == _receiptId) {
+                uint256 dividend = (receipt.totalAmount *
+                    receipt.tipPercentage) / 100;
+
+                (bool isSuccess, ) = (receipt.waiterAccount).call{
+                    value: dividend
+                }("");
+
+                if (!isSuccess) revert FailedPayWaiterError();
+
+                receipt.isWithdrawn = true;
+                receipts[index] = receipt;
+                return;
+            }
+        }
+        revert ReceiptNotFoundError();
     }
 
     function payWaiter(
@@ -74,20 +109,32 @@ contract DinePay {
         onlyWithRecepts
         onlyWithWaiter(_waiterAccount)
     {
-        uint256 waiterDividend = getWaiterDividend(_waiterAccount);
+        uint256 waiterDividend = withdrawWaiterDividend(_waiterAccount);
         (bool isSuccess, ) = (_waiterAccount).call{value: waiterDividend}("");
 
-        require(isSuccess, "failed to pay waiter");
+        if (!isSuccess) revert FailedPayWaiterError();
     }
 
     function payAllWaiters() external payable onlyOwner onlyWithRecepts {
+        bool areAllReceiptsWithdrawn = true;
+        for (uint256 index; index < receipts.length; index++) {
+            if (!receipts[index].isWithdrawn) {
+                areAllReceiptsWithdrawn = false;
+                break;
+            }
+        }
+
+        if (areAllReceiptsWithdrawn) {
+            revert AllReceiptsAlreadyWithdrawnError();
+        }
+
         for (uint256 index; index < waiterAccounts.length; index++) {
             address waiterAccount = waiterAccounts[index];
-            uint256 waiterDividend = getWaiterDividend(waiterAccount);
+            uint256 waiterDividend = withdrawWaiterDividend(waiterAccount);
             (bool isSuccess, ) = (waiterAccount).call{value: waiterDividend}(
                 ""
             );
-            require(isSuccess, "failed to pay waiter");
+            if (!isSuccess) revert FailedPayWaiterError();
         }
     }
 
@@ -99,30 +146,56 @@ contract DinePay {
         uint256 allWaitersDividend = 0;
 
         for (uint256 index; index < waiterAccounts.length; index++) {
-            allWaitersDividend += getWaiterDividend(waiterAccounts[index]);
+            allWaitersDividend += withdrawWaiterDividend(waiterAccounts[index]);
         }
         return allWaitersDividend;
     }
 
-    function getWaiterDividend(
+    function withdrawWaiterDividend(
         address _waiterAccount
     ) private returns (uint256) {
-        Receipt[] memory waiterReceipts = getReceiptsByWaiter(_waiterAccount);
-
         uint256 totalDividend = 0;
 
-        for (uint256 index; index < waiterReceipts.length; index++) {
-            Receipt memory receipt = waiterReceipts[index];
+        for (uint256 index; index < receipts.length; index++) {
+            Receipt memory receipt = receipts[index];
 
-            if (receipt.isWithdrawn) {
+            if (
+                receipt.isWithdrawn || receipt.waiterAccount != _waiterAccount
+            ) {
+                continue;
+            }
+
+            uint256 billAmount = (receipt.totalAmount /
+                (receipt.tipPercentage + 100)) * 100;
+
+            uint256 dividend = (billAmount * receipt.tipPercentage) / 100;
+
+            totalDividend += dividend;
+            receipt.isWithdrawn = true;
+            receipts[index] = receipt;
+        }
+
+        return totalDividend;
+    }
+
+    function getWaiterDividend(
+        address _waiterAccount
+    ) public view returns (uint256) {
+        uint256 totalDividend = 0;
+
+        for (uint256 index; index < receipts.length; index++) {
+            Receipt memory receipt = receipts[index];
+
+            if (
+                receipt.isWithdrawn || receipt.waiterAccount != _waiterAccount
+            ) {
                 continue;
             }
 
             uint256 dividend = (receipt.totalAmount * receipt.tipPercentage) /
                 100;
+
             totalDividend += dividend;
-            receipt.isWithdrawn = true;
-            receipts[index] = receipt;
         }
 
         return totalDividend;
@@ -132,13 +205,13 @@ contract DinePay {
         address _waiterAccount,
         uint256 _tipPercentage
     ) external payable {
-        require(msg.value > 0, "total amount must be greater than 0");
-        require(
-            _tipPercentage > 0 && _tipPercentage <= 100,
-            "tip percentage must be greater than 0 and lower than or equal to 100"
-        );
+        if (msg.value == 0) {
+            revert InvalidAmountError();
+        }
 
-        lastReceiptId++;
+        if (_tipPercentage <= 0 || _tipPercentage > 100) {
+            revert InvalidPercentageError();
+        }
 
         receipts.push(
             Receipt({
@@ -152,6 +225,7 @@ contract DinePay {
             })
         );
         waiterAccounts.push(_waiterAccount);
+        lastReceiptId++;
     }
 
     function getReceipts() external view returns (Receipt[] memory) {

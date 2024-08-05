@@ -57,7 +57,7 @@ describe('DinePay contract', () => {
         waiterAccount: waiterAccount1,
         totalAmount: 0,
       }),
-    ).to.rejectedWith('total amount must be greater than 0')
+    ).to.rejectedWith('InvalidAmountError')
   })
 
   it('should not register a recept with invalid tip percentage', async () => {
@@ -70,9 +70,7 @@ describe('DinePay contract', () => {
         waiterAccount: waiterAccount1,
         tipPercentage: 0,
       }),
-    ).to.rejectedWith(
-      'tip percentage must be greater than 0 and lower than or equal to 100',
-    )
+    ).to.rejectedWith('InvalidPercentageError')
 
     await expect(
       registerFakeReceiptFixture({
@@ -81,9 +79,7 @@ describe('DinePay contract', () => {
         waiterAccount: waiterAccount1,
         tipPercentage: 101,
       }),
-    ).to.rejectedWith(
-      'tip percentage must be greater than 0 and lower than or equal to 100',
-    )
+    ).to.rejectedWith('InvalidPercentageError')
   })
 
   it('should register a receipt', async () => {
@@ -172,7 +168,7 @@ describe('DinePay contract', () => {
     })
 
     expect(contract.getReceiptsByWaiter(waiterAccount2)).to.rejectedWith(
-      'waiter account not found',
+      'WaiterAccountNotFoundError',
     )
   })
 
@@ -208,7 +204,7 @@ describe('DinePay contract', () => {
     const { contract, customerAccount, waiterAccount1 } = await deployFixture()
 
     expect(contract.connect(customerAccount).payWaiter(waiterAccount1)).to.rejectedWith(
-      'only the owner of the contract can execute this function',
+      'NotOwnerError',
     )
   })
 
@@ -216,7 +212,7 @@ describe('DinePay contract', () => {
     const { contract, ownerAccount, waiterAccount1 } = await deployFixture()
 
     expect(contract.connect(ownerAccount).payWaiter(waiterAccount1)).to.rejectedWith(
-      'current balance must be greater than 0',
+      'InsufficientBalanceError',
     )
   })
 
@@ -224,7 +220,7 @@ describe('DinePay contract', () => {
     const { contract, ownerAccount, waiterAccount1 } = await deployFixture()
 
     expect(contract.connect(ownerAccount).payWaiter(waiterAccount1)).to.rejectedWith(
-      'no recept registered yet',
+      'ReceiptNotFoundError',
     )
   })
 
@@ -238,14 +234,47 @@ describe('DinePay contract', () => {
       waiterAccount: waiterAccount1,
     })
 
-    expect(contract.connect(ownerAccount).payWaiter(waiterAccount2)).to.rejectedWith(
-      'current balance must be greater than 0',
+    await expect(
+      contract.connect(ownerAccount).payWaiter(waiterAccount2),
+    ).to.rejectedWith('WaiterAccountNotFoundError')
+  })
+
+  it('should not pay a waiter for a specific receipt if the sender is not the owner', async () => {
+    const { contract, customerAccount } = await deployFixture()
+
+    await expect(
+      contract.connect(customerAccount).payWaiterReceipt(1),
+    ).to.revertedWithCustomError(contract, 'NotOwnerError')
+  })
+
+  it('should not pay a waiter for a specific receipt if there is no receipt registerd yet', async () => {
+    const { contract } = await deployFixture()
+
+    await expect(contract.payWaiterReceipt(1)).to.revertedWithCustomError(
+      contract,
+      'ReceiptNotFoundError',
     )
   })
 
-  it('should pay a waiter with their dividend calculated according to the respective tip percentage', async () => {
-    const { contract, ownerAccount, customerAccount, waiterAccount1, waiterAccount2 } =
-      await deployFixture()
+  it('should not pay a waiter for a specific receipt that does not exist', async () => {
+    const { contract, customerAccount, waiterAccount1 } = await deployFixture()
+
+    await registerFakeReceiptFixture({
+      contract,
+      customerAccount,
+      waiterAccount: waiterAccount1,
+      totalAmount: 1,
+      tipPercentage: 25,
+    })
+
+    await expect(contract.payWaiterReceipt(1)).to.revertedWithCustomError(
+      contract,
+      'ReceiptNotFoundError',
+    )
+  })
+
+  it('should pay a waiter for a specific receipt', async () => {
+    const { contract, customerAccount, waiterAccount1 } = await deployFixture()
 
     await registerFakeReceiptFixture({
       contract,
@@ -258,14 +287,6 @@ describe('DinePay contract', () => {
     await registerFakeReceiptFixture({
       contract,
       customerAccount,
-      waiterAccount: waiterAccount2,
-      totalAmount: 1,
-      tipPercentage: 10,
-    })
-
-    await registerFakeReceiptFixture({
-      contract,
-      customerAccount,
       waiterAccount: waiterAccount1,
       totalAmount: 1,
       tipPercentage: 50,
@@ -273,10 +294,46 @@ describe('DinePay contract', () => {
 
     const oldWaiterBalance = await ethers.provider.getBalance(waiterAccount1)
 
-    await contract.connect(ownerAccount).payWaiter(waiterAccount1)
+    await contract.payWaiterReceipt(0)
 
     const newWaiterBalance = await ethers.provider.getBalance(waiterAccount1)
-    expect(newWaiterBalance - oldWaiterBalance).to.equal(ethers.parseEther('0.75'))
+    expect(newWaiterBalance - oldWaiterBalance).to.equal(ethers.parseEther('0.25'))
+  })
+
+  it('should pay a waiter with their dividend calculated according to the respective tip percentage', async () => {
+    const { contract, customerAccount, waiterAccount1, waiterAccount2 } =
+      await deployFixture()
+
+    await Promise.all([
+      registerFakeReceiptFixture({
+        contract,
+        customerAccount,
+        waiterAccount: waiterAccount1,
+        totalAmount: 120,
+        tipPercentage: 50, // tipAmount: 40
+      }),
+      registerFakeReceiptFixture({
+        contract,
+        customerAccount,
+        waiterAccount: waiterAccount2,
+        totalAmount: 1,
+        tipPercentage: 10,
+      }),
+      registerFakeReceiptFixture({
+        contract,
+        customerAccount,
+        waiterAccount: waiterAccount1,
+        totalAmount: 180,
+        tipPercentage: 50, // tipAmount: 60
+      }),
+    ])
+
+    const oldWaiterBalance = await ethers.provider.getBalance(waiterAccount1)
+
+    await contract.payWaiter(waiterAccount1)
+
+    const newWaiterBalance = await ethers.provider.getBalance(waiterAccount1)
+    expect(newWaiterBalance - oldWaiterBalance).to.equal(ethers.parseEther('100')) // 40 + 60
   })
 
   it('should reduce the balance on pay waiters', async () => {
@@ -287,33 +344,33 @@ describe('DinePay contract', () => {
       contract,
       customerAccount,
       waiterAccount: waiterAccount1,
-      totalAmount: 1,
-      tipPercentage: 50,
+      totalAmount: 240,
+      tipPercentage: 50, // tipAmount: 80
     })
 
     await registerFakeReceiptFixture({
       contract,
       customerAccount,
       waiterAccount: waiterAccount1,
-      totalAmount: 1,
-      tipPercentage: 50,
+      totalAmount: 240,
+      tipPercentage: 50, // tipAmount: 80
     })
 
     await registerFakeReceiptFixture({
       contract,
       customerAccount,
       waiterAccount: waiterAccount1,
-      totalAmount: 1,
-      tipPercentage: 50,
+      totalAmount: 240,
+      tipPercentage: 50, // tipAmount: 80
     })
 
     let balance = await contract.getBalance()
-    expect(balance).to.equal(ethers.parseEther('3'))
+    expect(balance).to.equal(ethers.parseEther('720')) // 240 * 3
 
     await contract.connect(ownerAccount).payWaiter(waiterAccount1)
 
     balance = await contract.getBalance()
-    expect(balance).to.equal(ethers.parseEther('1.5'))
+    expect(balance).to.equal(ethers.parseEther('480')) // 80 * 3 - 720
   })
 
   it('should mark the receipts with "withdrawn" if they belong to the waiter who has been paid', async () => {
@@ -379,11 +436,39 @@ describe('DinePay contract', () => {
     expect(currentWaiterBalance).to.equal(oldWaiterBalance)
   })
 
-  it('should only pay all waiters if the sender is the contract owner', async () => {
+  it('should not pay all waiters if the sender is not the contract owner', async () => {
     const { contract, customerAccount } = await deployFixture()
 
     await expect(contract.connect(customerAccount).payAllWaiters()).to.rejectedWith(
-      'only the owner of the contract can execute this function',
+      'NotOwnerError',
+    )
+  })
+
+  it('should not pay all waiters if all receipts are already withdrawn', async () => {
+    const { contract, customerAccount, waiterAccount1, waiterAccount2 } =
+      await deployFixture()
+
+    await Promise.all([
+      registerFakeReceiptFixture({
+        contract,
+        customerAccount,
+        tipPercentage: 50,
+        totalAmount: 1,
+        waiterAccount: waiterAccount1,
+      }),
+      registerFakeReceiptFixture({
+        contract,
+        customerAccount,
+        tipPercentage: 50,
+        totalAmount: 1,
+        waiterAccount: waiterAccount2,
+      }),
+    ])
+
+    await contract.payAllWaiters()
+
+    await expect(contract.payAllWaiters()).to.rejectedWith(
+      'AllReceiptsAlreadyWithdrawnError',
     )
   })
 
@@ -402,24 +487,27 @@ describe('DinePay contract', () => {
         contract,
         customerAccount,
         tipPercentage: 50,
-        totalAmount: 1000,
+        totalAmount: 120,
         waiterAccount: waiterAccount1,
       }),
       registerFakeReceiptFixture({
         contract,
         customerAccount,
         tipPercentage: 50,
-        totalAmount: 1000,
+        totalAmount: 120,
         waiterAccount: waiterAccount2,
       }),
       registerFakeReceiptFixture({
         contract,
         customerAccount,
         tipPercentage: 50,
-        totalAmount: 1000,
+        totalAmount: 120,
         waiterAccount: waiterAccount3,
       }),
     ])
+
+    let contractBalance = await contract.getBalance()
+    expect(contractBalance.toString()).to.equal(ethers.parseEther('360'))
 
     await contract.payAllWaiters()
 
@@ -429,52 +517,33 @@ describe('DinePay contract', () => {
       ethers.provider.getBalance(waiterAccount3),
     ])
 
-    expect(waiter1Balance.toString()).to.equal(ethers.parseEther('500'))
-    expect(waiter2Balance.toString()).to.equal(ethers.parseEther('500'))
-    expect(waiter3Balance.toString()).to.equal(ethers.parseEther('500'))
+    expect(waiter1Balance.toString()).to.equal(ethers.parseEther('40'))
+    expect(waiter2Balance.toString()).to.equal(ethers.parseEther('40'))
+    expect(waiter3Balance.toString()).to.equal(ethers.parseEther('40'))
+    expect(waiter3Balance.toString()).to.equal(ethers.parseEther('40'))
+
+    contractBalance = await contract.getBalance()
+    expect(contractBalance.toString()).to.equal(ethers.parseEther('240'))
   })
 
   it('should withdraw only the amount that does not correspond to the all waiters dividend', async () => {
-    const {
-      contract,
-      ownerAccount,
-      customerAccount,
-      waiterAccount1,
-      waiterAccount2,
-      waiterAccount3,
-    } = await deployFixture()
+    const { contract, customerAccount, waiterAccount1 } = await deployFixture()
 
     await Promise.all([
       registerFakeReceiptFixture({
         contract,
         customerAccount,
-        tipPercentage: 25,
-        totalAmount: 1,
+        tipPercentage: 50,
+        totalAmount: 120,
         waiterAccount: waiterAccount1,
-      }),
-      registerFakeReceiptFixture({
-        contract,
-        customerAccount,
-        tipPercentage: 25,
-        totalAmount: 1,
-        waiterAccount: waiterAccount2,
-      }),
-      registerFakeReceiptFixture({
-        contract,
-        customerAccount,
-        tipPercentage: 25,
-        totalAmount: 1,
-        waiterAccount: waiterAccount3,
       }),
     ])
 
     let balance = await contract.getBalance()
-    expect(balance.toString()).to.equal(ethers.parseEther('3'))
+    expect(balance.toString()).to.equal(ethers.parseEther('120'))
 
     await contract.withdraw()
     balance = await contract.getBalance()
-    const ownerBalance = await ethers.provider.getBalance(ownerAccount)
-
-    expect(Math.round(Number(ethers.formatEther(ownerBalance)) - 10000)).to.equal(2)
+    expect(balance.toString()).to.equal(ethers.parseEther('40'))
   })
 })
