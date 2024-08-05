@@ -1,7 +1,9 @@
 export type ReceiptDto = {
-  bill: number
+  id?: number
+  totalAmount: number
   tipPercentage: number
-  numberOfPeople: number
   customerAccount: string
   waiterAccount: string
+  createdAt: Date
+  isWithdrawn: boolean
 }

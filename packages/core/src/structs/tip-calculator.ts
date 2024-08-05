@@ -1,5 +1,5 @@
 import { PositiveNumber } from './positive-number'
-import { Receipt } from './receipt'
+import { Receipt } from '../entities/receipt'
 
 type TipCalculatorProps = {
   percentage: PositiveNumber
@@ -22,7 +22,7 @@ export class TipCalculator {
     return new TipCalculator({
       percentage: PositiveNumber.create(0),
       bill: PositiveNumber.create(0),
-      numberOfPeople: PositiveNumber.create(0),
+      numberOfPeople: PositiveNumber.create(1),
     })
   }
 
@@ -40,16 +40,23 @@ export class TipCalculator {
 
   createReceipt(customerAccount: string, waiterAccount: string): Receipt {
     return Receipt.create({
-      bill: this.bill.value,
-      numberOfPeople: this.numberOfPeople.value,
+      totalAmount: this.totalAmount,
       tipPercentage: this.percentage.value,
       customerAccount: customerAccount,
       waiterAccount: waiterAccount,
+      isWithdrawn: false,
+      createdAt: new Date(),
     })
   }
 
+  reset() {
+    return TipCalculator.create()
+  }
+
   get canCreateReceipt() {
-   return this.numberOfPeople.isOverZero && this.percentage.isOverZero && this.bill.isOverZero
+    return (
+      this.numberOfPeople.isOverZero && this.percentage.isOverZero && this.bill.isOverZero
+    )
   }
 
   get tipAmount(): number {
@@ -64,14 +71,14 @@ export class TipCalculator {
     return this.tipAmount / this.numberOfPeople.value
   }
 
-  get total(): number {
+  get totalAmount(): number {
     return this.tipAmount + this.bill.value
   }
 
-  get totalPerPerson(): number {
+  get totalAmountPerPerson(): number {
     if (this.numberOfPeople.isZero) return 0
 
-    return this.total / this.numberOfPeople.value
+    return this.totalAmount / this.numberOfPeople.value
   }
 
   private clone(props?: Partial<TipCalculatorProps>): TipCalculator {
