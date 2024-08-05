@@ -1,1 +1,5 @@
+export { convertUsdToWei } from './convert-usd-to-wei'
+export { convertWeiToUsd } from './convert-wei-to-usd'
+export { fetchUsdExchangeRate } from './fetch-usd-exchange-rate'
+export { getUserAccount } from './get-user-account'
 export { handleError } from './handleError'
