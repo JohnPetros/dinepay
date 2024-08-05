@@ -1,13 +1,14 @@
+import { useCallback } from 'react'
 import { toast } from 'sonner'
 
 export function useToast() {
-  function success(message: string) {
+  const success = useCallback((message: string) => {
     toast.success(message)
-  }
+  }, [])
 
-  function error(message: string) {
+  const error = useCallback((message: string) => {
     toast.error(message)
-  }
+  }, [])
 
   return {
     success,
