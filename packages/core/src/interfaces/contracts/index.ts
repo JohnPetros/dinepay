@@ -1,1 +1,1 @@
-export type { IDinapayContract } from './dynapay-contract'
+export type { IDinepayContract } from './dynepay-contract'

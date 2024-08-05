@@ -47,11 +47,13 @@ contract DinePay {
     }
 
     modifier onlyWithWaiter(address _waiterAccount) {
-        if (waiterAccounts.length == 0) revert WaiterAccountNotFoundError();
+        address[] memory _waiterAccounts = waiterAccounts;
+
+        if (_waiterAccounts.length == 0) revert WaiterAccountNotFoundError();
 
         bool hasWaiter = false;
-        for (uint256 index = 0; index < waiterAccounts.length; index++) {
-            if (waiterAccounts[index] == _waiterAccount) {
+        for (uint256 index = 0; index < _waiterAccounts.length; index++) {
+            if (_waiterAccounts[index] == _waiterAccount) {
                 hasWaiter = true;
                 break;
             }
@@ -79,10 +81,12 @@ contract DinePay {
     function payWaiterReceipt(
         uint256 _receiptId
     ) external payable onlyOwner onlyWithRecepts {
-        for (uint256 index = 0; index < receipts.length; index++) {
-            Receipt memory receipt = receipts[index];
+        Receipt[] memory _receipts = receipts;
 
-            if (receipts[index].id == _receiptId) {
+        for (uint256 index = 0; index < _receipts.length; index++) {
+            Receipt memory receipt = _receipts[index];
+
+            if (_receipts[index].id == _receiptId) {
                 uint256 dividend = (receipt.totalAmount *
                     receipt.tipPercentage) / 100;
 
@@ -117,8 +121,10 @@ contract DinePay {
 
     function payAllWaiters() external payable onlyOwner onlyWithRecepts {
         bool areAllReceiptsWithdrawn = true;
-        for (uint256 index; index < receipts.length; index++) {
-            if (!receipts[index].isWithdrawn) {
+        Receipt[] memory _receipts = receipts;
+
+        for (uint256 index; index < _receipts.length; index++) {
+            if (!_receipts[index].isWithdrawn) {
                 areAllReceiptsWithdrawn = false;
                 break;
             }
@@ -128,8 +134,10 @@ contract DinePay {
             revert AllReceiptsAlreadyWithdrawnError();
         }
 
-        for (uint256 index; index < waiterAccounts.length; index++) {
-            address waiterAccount = waiterAccounts[index];
+        address[] memory _waiterAccounts = waiterAccounts;
+
+        for (uint256 index; index < _waiterAccounts.length; index++) {
+            address waiterAccount = _waiterAccounts[index];
             uint256 waiterDividend = withdrawWaiterDividend(waiterAccount);
             (bool isSuccess, ) = (waiterAccount).call{value: waiterDividend}(
                 ""
@@ -144,9 +152,12 @@ contract DinePay {
 
     function getAllWaitersDividend() private returns (uint256) {
         uint256 allWaitersDividend = 0;
+        address[] memory _waiterAccounts = waiterAccounts;
 
-        for (uint256 index; index < waiterAccounts.length; index++) {
-            allWaitersDividend += withdrawWaiterDividend(waiterAccounts[index]);
+        for (uint256 index; index < _waiterAccounts.length; index++) {
+            allWaitersDividend += withdrawWaiterDividend(
+                _waiterAccounts[index]
+            );
         }
         return allWaitersDividend;
     }
@@ -155,9 +166,10 @@ contract DinePay {
         address _waiterAccount
     ) private returns (uint256) {
         uint256 totalDividend = 0;
+        Receipt[] storage _receipts = receipts;
 
-        for (uint256 index; index < receipts.length; index++) {
-            Receipt memory receipt = receipts[index];
+        for (uint256 index; index < _receipts.length; index++) {
+            Receipt memory receipt = _receipts[index];
 
             if (
                 receipt.isWithdrawn || receipt.waiterAccount != _waiterAccount
@@ -172,8 +184,10 @@ contract DinePay {
 
             totalDividend += dividend;
             receipt.isWithdrawn = true;
-            receipts[index] = receipt;
+            _receipts[index] = receipt;
         }
+
+        receipts = _receipts;
 
         return totalDividend;
     }
@@ -182,9 +196,10 @@ contract DinePay {
         address _waiterAccount
     ) public view returns (uint256) {
         uint256 totalDividend = 0;
+        Receipt[] memory _receipts = receipts;
 
-        for (uint256 index; index < receipts.length; index++) {
-            Receipt memory receipt = receipts[index];
+        for (uint256 index; index < _receipts.length; index++) {
+            Receipt memory receipt = _receipts[index];
 
             if (
                 receipt.isWithdrawn || receipt.waiterAccount != _waiterAccount
@@ -242,8 +257,10 @@ contract DinePay {
         returns (Receipt[] memory)
     {
         uint256 waiterReceiptsCount = 0;
-        for (uint256 index = 0; index < receipts.length; index++) {
-            if (receipts[index].waiterAccount == _waiterAccount) {
+        Receipt[] memory _receipts = receipts;
+
+        for (uint256 index = 0; index < _receipts.length; index++) {
+            if (_receipts[index].waiterAccount == _waiterAccount) {
                 waiterReceiptsCount++;
             }
         }

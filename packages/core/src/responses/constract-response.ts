@@ -19,8 +19,12 @@ export class ContractResponse<Data> {
     if (this._error) throw new this._error()
   }
 
+  get hasTransaction() {
+    return Boolean(this._transactionHash)
+  }
+
   get isSuccess() {
-    return this._transactionHash !== null && this._error === null
+    return this._error === null
   }
 
   get isFailure() {
