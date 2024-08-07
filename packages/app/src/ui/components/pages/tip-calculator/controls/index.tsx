@@ -12,6 +12,7 @@ export const Controls = () => {
         label='Bill'
         icon='dollar-sign'
         error={billError}
+        min={0}
         autoFocus
         onChange={handleBillChange}
       />
@@ -19,6 +20,7 @@ export const Controls = () => {
       <NumberInput
         label='Number of People'
         icon='people'
+        min={0}
         defaultValue={1}
         error={numberOfPeopleError}
         onChange={handleNumberOfPeopleChange}

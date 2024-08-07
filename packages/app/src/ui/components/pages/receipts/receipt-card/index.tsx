@@ -2,7 +2,7 @@ import { WAITERS } from '@/ui/constants'
 import { useAmountFormatter, useDate } from '@/ui/hooks'
 import { Loading } from '@/ui/components/shared/loading'
 import { Info } from './info'
-import { useReceiptCard } from './use-receipt-cardse-card'
+import { useReceiptCard } from './use-receipt-card'
 import { WaiterPaymentDialog } from './waiter-payment-dialog'
 import { ReceiptPaymentDialog } from './receipt-payment-dialog'
 

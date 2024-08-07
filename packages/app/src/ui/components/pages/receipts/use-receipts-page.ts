@@ -6,11 +6,12 @@ import { Receipt } from '@dinepay/core/structs'
 import type { WaiterSelectorRef } from '../../shared/waiter-selector/types'
 
 export function useReceiptsPage(waiterSelectorRef: RefObject<WaiterSelectorRef>) {
-  const web3 = useWeb3()
-  const toast = useToast()
   const [receipts, setReceipts] = useState<Receipt[]>([])
   const [balance, setBalance] = useState(0)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isFetching, setIsFetching] = useState(true)
+  const [isTransactioning, setIsTransactioning] = useState(false)
+  const web3 = useWeb3()
+  const toast = useToast()
 
   const fetchBalance = useCallback(async () => {
     const response = await web3.dinepayContract.getBalance()
@@ -23,7 +24,7 @@ export function useReceiptsPage(waiterSelectorRef: RefObject<WaiterSelectorRef>)
 
   const fetchReceipts = useCallback(async () => {
     const response = await web3.dinepayContract.getReceipts()
-    setIsLoading(false)
+    setIsFetching(false)
     if (response.isSuccess) {
       console.log(response.data)
       const receipts = response.data.map(Receipt.create)
@@ -35,7 +36,7 @@ export function useReceiptsPage(waiterSelectorRef: RefObject<WaiterSelectorRef>)
 
   async function fetchReceiptsByWaiter(waiterAccount: string) {
     const response = await web3.dinepayContract.getReceiptsByWaiter(waiterAccount)
-    setIsLoading(false)
+    setIsFetching(false)
     if (response.isSuccess) {
       const receipts = response.data.map(Receipt.create)
       setReceipts(receipts)
@@ -46,7 +47,7 @@ export function useReceiptsPage(waiterSelectorRef: RefObject<WaiterSelectorRef>)
   }
 
   async function handleSelectWaiter(waiterAccount: string) {
-    setIsLoading(true)
+    setIsFetching(true)
 
     if (waiterAccount === 'all') {
       await fetchReceipts()
@@ -61,12 +62,36 @@ export function useReceiptsPage(waiterSelectorRef: RefObject<WaiterSelectorRef>)
   }
 
   async function handleWithdrawButtonClick() {
-    await web3.dinepayContract.withdraw()
+    setIsTransactioning(true)
+
+    const response = await web3.dinepayContract.withdraw()
+
+    setIsTransactioning(false)
+
+    if (response.isFailure) {
+      toast.error(response.errorMessage)
+      return
+    }
+
+    toast.success('Contract sithdrawn successfully')
+
     await handlePayWaiter()
   }
 
   async function handlePayAllWaitersButtonClick() {
-    await web3.dinepayContract.payAllWaiters()
+    setIsTransactioning(true)
+
+    const response = await web3.dinepayContract.payAllWaiters()
+
+    setIsTransactioning(false)
+
+    if (response.isFailure) {
+      toast.error(response.errorMessage)
+      return
+    }
+
+    toast.success('All waiters were successfully paid')
+
     await handlePayWaiter()
   }
 
@@ -78,7 +103,8 @@ export function useReceiptsPage(waiterSelectorRef: RefObject<WaiterSelectorRef>)
   return {
     balance: useAmountFormatter(balance),
     receipts,
-    isLoading,
+    isFetching,
+    isTransactioning,
     handleSelectWaiter,
     handlePayWaiter,
     handlePayAllWaitersButtonClick,

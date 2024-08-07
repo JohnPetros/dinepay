@@ -14,7 +14,7 @@ export const WAITERS: Waiter[] = [
     id: 1,
     name: 'Charlles Traymore',
     avatar: CharllesTraymore,
-    accountAddress: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
+    accountAddress: '0x31C3c9cAbE2FEF2D2cc583BF829A08CF0Dc62512',
   },
   {
     id: 2,

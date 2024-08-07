@@ -12,7 +12,8 @@ export function ReceiptsPage() {
   const {
     balance,
     receipts,
-    isLoading,
+    isFetching,
+    isTransactioning,
     handleSelectWaiter,
     handlePayWaiter,
     handlePayAllWaitersButtonClick,
@@ -21,6 +22,11 @@ export function ReceiptsPage() {
 
   return (
     <>
+      {isTransactioning && (
+        <div className='absolute inset-0 grid place-content-center bg-black/75 z-50'>
+          <Loading className='w-20 h-20' />
+        </div>
+      )}
       <Link route='/'>Tip calculator</Link>
       <header className='flex items-center justify-between w-full mt-3 p-6 bg-white rounded-lg shadow-lg'>
         <div>
@@ -40,7 +46,7 @@ export function ReceiptsPage() {
             <Button
               bg='tertiary'
               size='small'
-              disabled={isLoading}
+              disabled={isFetching || isTransactioning}
               onClick={handleWithdrawButtonClick}
             >
               withdraw
@@ -50,7 +56,7 @@ export function ReceiptsPage() {
             <Button
               bg='tertiary'
               size='small'
-              disabled={isLoading}
+              disabled={isFetching || isTransactioning}
               onClick={handlePayAllWaitersButtonClick}
             >
               pay all waiters
@@ -59,8 +65,8 @@ export function ReceiptsPage() {
         </div>
       </header>
 
-      <main className='mt-6'>
-        {isLoading ? (
+      <main className='mt-6 pb-12'>
+        {isFetching ? (
           <div className='flex items-center gap-3 mx-auto w-max mt-12'>
             <p className='text-grayish-cyan text-xl font-medium'>Please, wait...</p>
             <Loading />

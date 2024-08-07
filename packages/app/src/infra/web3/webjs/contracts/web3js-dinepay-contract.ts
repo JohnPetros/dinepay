@@ -9,7 +9,7 @@ import { ContractResponse } from '@dinepay/core/responses'
 import { handleError, convertUsdToWei, convertWeiToUsd } from '../utils'
 import { Web3jsReceiptDtoMapper } from '../mappers'
 
-const CONTRACT_ADDRESS = import.meta.env.VITE_DINAPAY_CONTRACT_ADDRESS
+const CONTRACT_ADDRESS = import.meta.env.VITE_DINEPAY_CONTRACT_ADDRESS
 const OWNER_ACCOUNT_ADDRESS = import.meta.env.VITE_OWNER_ACCOUNT_ADDRESS
 
 export const Web3jsDinePayContract = (web3js: Web3): IDinepayContract => {

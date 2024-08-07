@@ -31,7 +31,12 @@ export const TipPercentageSelector = () => {
         ))}
 
         {isCustomPercentageInputVisible ? (
-          <NumberInput autoFocus onChange={handleCustomPercentageInputChange} />
+          <NumberInput
+            min={0}
+            max={100}
+            autoFocus
+            onChange={handleCustomPercentageInputChange}
+          />
         ) : (
           <Button bg='secondary' onClick={handleCustomPercentageButtonClick}>
             Custom
