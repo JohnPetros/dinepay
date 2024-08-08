@@ -12,5 +12,4 @@ export interface IDinepayContract {
   payWaiter(waiterAccount: string): Promise<ContractResponse<null>>
   payAllWaiters(): Promise<ContractResponse<null>>
   withdraw(): Promise<ContractResponse<null>>
-  // getReceiptByWaiter(waiterAccount: string): Promise<ContractResponse<ReceiptDTO[]>>
 }
