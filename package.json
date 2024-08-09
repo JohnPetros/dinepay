@@ -4,7 +4,8 @@
   "description": "web3 app for restaurant receipts management.",
   "scripts": {
     "dev": "turbo run dev",
-    "deploy": "turbo run deploy"
+    "deploy": "turbo run deploy",
+    "build": "turbo run build"
   },
   "author": "John Petros",
   "license": "MIT",
