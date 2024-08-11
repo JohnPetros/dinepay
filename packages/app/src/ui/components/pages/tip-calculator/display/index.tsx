@@ -16,7 +16,9 @@ export const Display = () => {
           <Result label='tip amount' amount={tipCalulator.tipAmount} />
         </div>
       </div>
-      <PayamentButton />
+      <div className='mt-3'>
+        <PayamentButton />
+      </div>
     </div>
   )
 }

@@ -21,46 +21,48 @@ export function ReceiptsPage() {
   } = useReceiptsPage(waiterSelectorRef)
 
   return (
-    <>
+    <div className='px-6 lg:px-0'>
       {isTransactioning && (
         <div className='absolute inset-0 grid place-content-center bg-black/75 z-50'>
           <Loading className='w-20 h-20' />
         </div>
       )}
       <Link route='/'>Tip calculator</Link>
-      <header className='flex items-center justify-between w-full mt-3 p-6 bg-white rounded-lg shadow-lg'>
+      <header className='flex flex-col md:flex-row items-center justify-between gap-3 md:gap-0 w-full mt-3 p-6 bg-white rounded-lg shadow-lg'>
         <div>
           <span className='p-1 rounded-lg bg-very-light-grayish-cyan text-grayish font-semibold uppercase'>
             Balance
           </span>
           <strong className='inline-block ml-4 text-2xl'>{balance}</strong>
         </div>
-        <div className='flex items-center gap-3'>
-          <span className='text-dark-grayish-cyan'>Selected waiter:</span>
+        <div className='flex flex-col md:flex-row items-center gap-3'>
+          <span className='text-dark-grayish-cyan mt-3 md:mt-0'>Selected waiter:</span>
           <WaiterSelector
             ref={waiterSelectorRef}
             canSelectAll
             onSelect={handleSelectWaiter}
           />
-          <div className='w-32'>
-            <Button
-              bg='tertiary'
-              size='small'
-              disabled={isFetching || isTransactioning}
-              onClick={handleWithdrawButtonClick}
-            >
-              withdraw
-            </Button>
-          </div>
-          <div className='w-40'>
-            <Button
-              bg='tertiary'
-              size='small'
-              disabled={isFetching || isTransactioning}
-              onClick={handlePayAllWaitersButtonClick}
-            >
-              pay all waiters
-            </Button>
+          <div className='flex gap-3 mt-3 md:mt-0'>
+            <div className='w-32'>
+              <Button
+                bg='tertiary'
+                size='small'
+                disabled={isFetching || isTransactioning}
+                onClick={handleWithdrawButtonClick}
+              >
+                withdraw
+              </Button>
+            </div>
+            <div className='w-40'>
+              <Button
+                bg='tertiary'
+                size='small'
+                disabled={isFetching || isTransactioning}
+                onClick={handlePayAllWaitersButtonClick}
+              >
+                pay all waiters
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -94,6 +96,6 @@ export function ReceiptsPage() {
           <p className='mx-auto w-max mt-3 text-dark-grayish-cyan'>No receipt found.</p>
         )}
       </main>
-    </>
+    </div>
   )
 }
