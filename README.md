@@ -1,25 +1,25 @@
 <h1 align="center">
-  Dev Media 👨‍💻
+  DinePay 🍽️ 
 </h1>
 
 <div align="center">
    <a href="https://github.com/JohnPetros">
     <img alt="Made by JohnPetros" src="https://img.shields.io/badge/made%20by-JohnPetros-blueviolet">
    </a>
-   <img alt="GitHub Language Count" src="https://img.shields.io/github/languages/count/JohnPetros/dev-media">
-   <a href="https://github.com/JohnPetros/dev-media/commits/main">
-    <img alt="GitHub Last Commit" src="https://img.shields.io/github/last-commit/JohnPetros/dev-media">
+   <img alt="GitHub Language Count" src="https://img.shields.io/github/languages/count/JohnPetros/dinepay">
+   <a href="https://github.com/JohnPetros/dinepay/commits/main">
+    <img alt="GitHub Last Commit" src="https://img.shields.io/github/last-commit/JohnPetros/dinepay">
    </a>
   </a>
    </a>
-   <a href="https://github.com/JohnPetros/dev-media/blob/main/LICENSE.md">
-    <img alt="GitHub License" src="https://img.shields.io/github/license/JohnPetros/dev-media">
+   <a href="https://github.com/JohnPetros/dinepay/blob/main/LICENSE.md">
+    <img alt="GitHub License" src="https://img.shields.io/github/license/JohnPetros/dinepay">
    </a>
-    <img alt="Stargazers" src="https://img.shields.io/github/stars/JohnPetros/dev-media?style=social">
+    <img alt="Stargazers" src="https://img.shields.io/github/stars/JohnPetros/dinepay?style=social">
 </div>
 <br>
 
-## 🖥️ Sobre o Projeto
+## 🖥️ About the project
 
 **DinePay** is a dapp, a web application that leverages blockchain's technology to provide features that required extra **security** and **immutability**.
 
@@ -32,7 +32,7 @@ Lastly, The design of the project is based on the [Tip calculator app](https://w
 
 ### ⏹️ Demonstração
 
-<table align="center">
+<!-- <table align="center">
   <tr>
     <td align="center">
     <span>Tip calculator<br/><br/></span>
@@ -45,7 +45,7 @@ Lastly, The design of the project is based on the [Tip calculator app](https://w
     <img src="documentation/images/details-page.png" alt="Página de detalhes" height="500" />
     </td>
   </tr>
-</table>
+</table> -->
 
 ---
 
