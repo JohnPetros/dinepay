@@ -106,7 +106,7 @@ This project was developed using the technolgies bellow:
 - [Git](https://git-scm.com/) for manipulating Git repositories.
 - [Nodejs](https://www.python.org/) for installing the dependencies and runnning the application (using [npm](https://www.w3schools.com/python/python_pip.asp), [yarn](https://yarnpkg.com/)).
 
-> Also it is good to have a code editor like [VSCode](https://code.visualstudio.com/)
+> Also it is good to have a code editor like [VSCode](https://code.visualstudio.com/).
 
 ### 📟 Running the application
 
