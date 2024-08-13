@@ -19,7 +19,7 @@
 </div>
 <br>
 
-## 🖥️ About the project
+## 🖥️ About
 
 **DinePay** is a dapp, a web application that leverages blockchain's technology to provide features that required extra **security** and **immutability**.
 
@@ -30,7 +30,7 @@ The goal of developing this project was to learn the basic of smarta contract de
 Lastly, The design of the project is based on the [Tip calculator app](https://www.frontendmentor.io/challenges/tip-calculator-app-ugJNGbJUX) from [Frontend Mentor](https://www.frontendmentor.io/), a free online platform where you can enhance you frontend development skills.
 
 
-### ⏹️ Demonstração
+### ⏹️ Demonstration
 
 <!-- <table align="center">
   <tr>
